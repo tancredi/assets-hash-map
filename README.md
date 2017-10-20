@@ -6,19 +6,19 @@
 
 ###### Install
 
-```
+```bash
 npm install -g assets-hash-map
 ```
 
 ###### Simple usage
 
-```
+```bash
 assets-hash-map my-dir
 ```
 
 ###### Example output:
 
-```
+```json
 {
   "public/assets/my-dir/image1.png": "b5e7a2060081a33477a98db33eac9ec4c59ba5db",
   "public/assets/my-dir/image2.png": "a58bdd9dcc965d5b0f36b75f33a5fbcb6f2036ab",
@@ -30,7 +30,7 @@ assets-hash-map my-dir
 
 ##### Command-line options
 
-```
+```bash
 +--------------------------------+
 |   Assets Hash Map generator:   |
 +--------------------------------+
@@ -60,7 +60,7 @@ Example:
 
 ###### Install
 
-```
+```bash
 npm install assets-hash-map
 ```
 
@@ -79,7 +79,7 @@ Options:
 
 ###### Example
 
-```
+```javascript
 const { getHashesMap } = require('assets-hash-map')
 
 getHashesMap('./my-project', { include: [ 'png', 'jpg' ] })
