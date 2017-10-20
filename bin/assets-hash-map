@@ -76,7 +76,7 @@ function run() {
   .then(result => {
     const json = JSON.stringify(result, null, options.spaces)
 
-    if (!options.output) { console.log(json) }
+    if (!options.output) { return console.log(json) }
 
     return writeFile(options.output, json)
   })
@@ -94,11 +94,10 @@ function run() {
  * @return {void}
  */
 function validateOptions(args) {
+  if (!args._.length) { return showHelp() }
+
   for (let key in args) {
-    if (ACCEPT_OPTIONS.indexOf(key) === -1) {
-      console.log(`Option '${ key }' not recognized`)
-      return showHelp()
-    }
+    if (ACCEPT_OPTIONS.indexOf(key) === -1) { showHelp() }
   }
 }
 
