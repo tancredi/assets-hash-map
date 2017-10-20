@@ -1,0 +1,153 @@
+#!/usr/bin/env node
+
+const minimist = require('minimist')
+const Promise = require('bluebird')
+const { getHashesMap } = require('../src')
+const writeFile = Promise.promisify(require('fs').writeFile)
+
+/**
+ * Assets hash map command line tool
+ *
+ * Command line interface to generate a hashes map of all assets contained in
+ * one or many directories - walks all files in given paths (or globs) and
+ * generates a JSON map of paths to sha-sums of each matching file found
+ */
+
+/**
+ * Options accepted by the command line tool
+ *
+ * @type {String[]}
+ */
+const ACCEPT_OPTIONS = [
+  '_', 'extensions', 'e', 'exclude', 'x', 'absolute', 'g', 'b', 'base-path',
+  's', 'spaces', 'o', 'output', 'h', 'help', 'a', 'all'
+]
+
+/**
+ * Help text displayed when entering unrecognised options or by typing -h or
+ * --help
+ *
+ * @type {String[]}
+ */
+const HELP_TEXT = `
++--------------------------------+
+|   Assets Hash Map generator:   |
++--------------------------------+
+
+Generate a JSON assets hash map.
+Usage: assets-hash-map [ paths ]
+
+Options:
+  -e, --extensions  Filter by file extension (comma separated)
+  -x, --exclude     Exclude file extensions (comma separated)
+  -b, --base-path   Set base path (filepaths will be relative to this)
+  -s, --spaces      Tab spaces used formatting the JSON (defaults to 2)
+  -o, --output      Output file (defaults to STDOUT)
+  -a, --all         Include hidden files
+  -h, --help        Show usage info
+
+Example:
+  assets-hash-map /dev/my-project/assets \\
+    -e png,jpg,svg \\
+    -x html,md \\
+    -b /dev/my-project \\
+    -s 0
+    -o foo.json
+`
+
+// Run script
+run()
+
+/**
+ * Run script and print output
+ *
+ * @return {void}
+ */
+function run() {
+  const args = minimist(process.argv.slice(2))
+
+  validateOptions(args)
+
+  if (args.h || args.help) { return showHelp() }
+
+  const options = parseOptions(args)
+
+  return buildResult(args._, options)
+  .then(result => {
+    const json = JSON.stringify(result, null, options.spaces)
+
+    if (!options.output) { console.log(json) }
+
+    return writeFile(options.output, json)
+  })
+  .catch(err => {
+    console.log(err)
+    process.exit(err)
+  })
+}
+
+/**
+ * Validate options passed to the command, show help in case of invalid user
+ * input
+ *
+ * @param  {Object} args
+ * @return {void}
+ */
+function validateOptions(args) {
+  for (let key in args) {
+    if (ACCEPT_OPTIONS.indexOf(key) === -1) {
+      console.log(`Option '${ key }' not recognized`)
+      return showHelp()
+    }
+  }
+}
+
+/**
+ * Show help text and exit process
+ *
+ * @return {void}
+ */
+function showHelp() {
+  console.log(HELP_TEXT)
+  process.exit()
+}
+
+/**
+ * Map all filepaths assets and build output Object
+ *
+ * @param  {String} filepath
+ * @param  {Object} options
+ * @return {Promise}
+ */
+function buildResult(filepaths, options) {
+  return Promise.map(filepaths, filepath => getHashesMap(filepath, options))
+  .then(maps => {
+    const out = {}
+    for (let map of maps) { Object.assign(out, map) }
+    return out
+  })
+}
+
+/**
+ * Parse options from arguments
+ *
+ * @param  {Object} args
+ * @return {Object}
+ */
+function parseOptions(args) {
+  const extensions = args.e || args.extensions
+  const exclude = args.x || args.exclude
+  const spaces = args.s || typeof args.spaces
+
+  const options = {
+    extensions: extensions ? extensions.split(',') : null,
+    exclude: exclude ? exclude.split(',') : null,
+    all: args.a || args.all || false,
+    absolute: args.g || args.absolute || false,
+    basePath: args.b || args['base-path'] || null,
+    spaces: typeof spaces === 'undefined' ? 2 : parseInt(spaces, 10),
+    output: args.o || args.output || null
+  }
+
+  return options
+}

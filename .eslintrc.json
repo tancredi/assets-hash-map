@@ -1,0 +1,28 @@
+{
+  "extends": [ "standard" ],
+  "parserOptions" : {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser" : false,
+    "node"    : true
+  },
+  "rules": {
+    "padded-blocks": [ "error", { "blocks": "never", "switches": "always", "classes": "always" } ],
+    "key-spacing": [ "off" ],
+    "eol-last": [ "error", "never" ],
+    "indent": [ "error", 2, { "VariableDeclarator": 2, "MemberExpression": 0, "SwitchCase": 1 } ],
+    "space-before-function-paren": ["error", {
+       "anonymous": "always",
+       "named": "never",
+       "asyncArrow": "always"
+     }],
+    "object-property-newline": "off",
+    "template-curly-spacing": [ "error", "always" ],
+    "no-return-assign": "off",
+    "max-len": [ "error", 80, 4 ],
+    "no-extend-native": [ "off" ],
+    "no-unused-vars": [ "error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false } ]
+  }
+}
