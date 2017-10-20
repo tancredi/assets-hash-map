@@ -1,5 +1,5 @@
 {
-  "name": "assets-hash-tree",
+  "name": "assets-hash-map",
   "version": "1.0.0",
   "description": "Command-line tool / Node.js utility to recursively generate maps of filepaths and sha-sums - comes in handy for cachebusting.",
   "main": "src/index.js",
