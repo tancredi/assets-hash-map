@@ -20,20 +20,28 @@ const writeFile = util.promisify(require("fs").writeFile);
  */
 const ACCEPT_OPTIONS = [
   "_",
+
   "extensions",
   "e",
+
   "exclude",
   "x",
+
   "absolute",
   "g",
+
   "b",
   "base-path",
+
   "s",
   "spaces",
+
   "o",
   "output",
+
   "h",
   "help",
+
   "a",
   "all",
 ];
@@ -56,6 +64,7 @@ Options:
   -e, --extensions  Filter by file extension (comma separated)
   -x, --exclude     Exclude file extensions (comma separated)
   -b, --base-path   Set base path (filepaths will be relative to this)
+  -g, --absolute    Map with absolute paths
   -s, --spaces      Tab spaces used formatting the JSON (defaults to 2)
   -o, --output      Output file (defaults to STDOUT)
   -a, --all         Include hidden files

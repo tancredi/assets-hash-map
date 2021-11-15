@@ -18,13 +18,14 @@
   "devDependencies": {
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-config-recommended": "^4.1.0",
+    "eslint-config-recommended": "^3.0.2",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0"
   },
   "dependencies": {
+    "klaw": "^4.0.1",
     "minimist": "^1.2.5",
     "shasum": "^1.0.2",
-    "walk-folder-tree": "^1.0.1"
+    "through2": "^4.0.2"
   }
 }
