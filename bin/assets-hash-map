@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const minimist = require('minimist')
-const Promise = require('bluebird')
-const { getHashesMap } = require('../src')
-const writeFile = Promise.promisify(require('fs').writeFile)
+const util = require("util");
+const minimist = require("minimist");
+const { getHashesMap } = require("../src");
+const writeFile = util.promisify(require("fs").writeFile);
 
 /**
  * Assets hash map command line tool
@@ -19,9 +19,24 @@ const writeFile = Promise.promisify(require('fs').writeFile)
  * @type {String[]}
  */
 const ACCEPT_OPTIONS = [
-  '_', 'extensions', 'e', 'exclude', 'x', 'absolute', 'g', 'b', 'base-path',
-  's', 'spaces', 'o', 'output', 'h', 'help', 'a', 'all'
-]
+  "_",
+  "extensions",
+  "e",
+  "exclude",
+  "x",
+  "absolute",
+  "g",
+  "b",
+  "base-path",
+  "s",
+  "spaces",
+  "o",
+  "output",
+  "h",
+  "help",
+  "a",
+  "all",
+];
 
 /**
  * Help text displayed when entering unrecognised options or by typing -h or
@@ -53,10 +68,10 @@ Example:
     -b /dev/my-project \\
     -s 0
     -o foo.json
-`
+`;
 
 // Run script
-run()
+run();
 
 /**
  * Run script and print output
@@ -64,26 +79,30 @@ run()
  * @return {void}
  */
 function run() {
-  const args = minimist(process.argv.slice(2))
+  const args = minimist(process.argv.slice(2));
 
-  validateOptions(args)
+  validateOptions(args);
 
-  if (args.h || args.help) { return showHelp() }
+  if (args.h || args.help) {
+    return showHelp();
+  }
 
-  const options = parseOptions(args)
+  const options = parseOptions(args);
 
   return buildResult(args._, options)
-  .then(result => {
-    const json = JSON.stringify(result, null, options.spaces)
+    .then((result) => {
+      const json = JSON.stringify(result, null, options.spaces);
 
-    if (!options.output) { return console.log(json) }
+      if (!options.output) {
+        return console.log(json);
+      }
 
-    return writeFile(options.output, json)
-  })
-  .catch(err => {
-    console.log(err)
-    process.exit(err)
-  })
+      return writeFile(options.output, json);
+    })
+    .catch((err) => {
+      console.log(err);
+      process.exit(err);
+    });
 }
 
 /**
@@ -94,10 +113,14 @@ function run() {
  * @return {void}
  */
 function validateOptions(args) {
-  if (!args._.length) { return showHelp() }
+  if (!args._.length) {
+    return showHelp();
+  }
 
-  for (let key in args) {
-    if (ACCEPT_OPTIONS.indexOf(key) === -1) { showHelp() }
+  for (const key in args) {
+    if (ACCEPT_OPTIONS.indexOf(key) === -1) {
+      showHelp();
+    }
   }
 }
 
@@ -107,24 +130,27 @@ function validateOptions(args) {
  * @return {void}
  */
 function showHelp() {
-  console.log(HELP_TEXT)
-  process.exit()
+  console.log(HELP_TEXT);
+  process.exit();
 }
 
 /**
  * Map all filepaths assets and build output Object
  *
- * @param  {String} filepath
+ * @param  {String[]} filepaths
  * @param  {Object} options
  * @return {Promise}
  */
 function buildResult(filepaths, options) {
-  return Promise.map(filepaths, filepath => getHashesMap(filepath, options))
-  .then(maps => {
-    const out = {}
-    for (let map of maps) { Object.assign(out, map) }
-    return out
-  })
+  return Promise.all(
+    filepaths.map((filepath) => getHashesMap(filepath, options))
+  ).then((maps) => {
+    const out = {};
+    for (const map of maps) {
+      Object.assign(out, map);
+    }
+    return out;
+  });
 }
 
 /**
@@ -134,19 +160,19 @@ function buildResult(filepaths, options) {
  * @return {Object}
  */
 function parseOptions(args) {
-  const extensions = args.e || args.extensions
-  const exclude = args.x || args.exclude
-  const spaces = args.s || typeof args.spaces
+  const extensions = args.e || args.extensions;
+  const exclude = args.x || args.exclude;
+  const spaces = args.s || typeof args.spaces;
 
   const options = {
-    extensions: extensions ? extensions.split(',') : null,
-    exclude: exclude ? exclude.split(',') : null,
+    extensions: extensions ? extensions.split(",") : null,
+    exclude: exclude ? exclude.split(",") : null,
     all: args.a || args.all || false,
     absolute: args.g || args.absolute || false,
-    basePath: args.b || args['base-path'] || null,
-    spaces: typeof spaces === 'undefined' ? 2 : parseInt(spaces, 10),
-    output: args.o || args.output || null
-  }
+    basePath: args.b || args["base-path"] || null,
+    spaces: typeof spaces === "undefined" ? 2 : parseInt(spaces, 10),
+    output: args.o || args.output || null,
+  };
 
-  return options
+  return options;
 }
